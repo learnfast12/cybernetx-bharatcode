@@ -8,6 +8,8 @@ from scanner import ThreatScanner
 from sandbox import GhostSandbox
 from guardian import GuardianAlert
 from database import Database
+import asyncio
+from bharatcode_client import explain_verdict
 
 app = FastAPI(title="ShieldNetX API", version="1.0.0")
 
@@ -96,6 +98,16 @@ async def scan(req: ScanRequest, request: Request):
             threat_type=threat_type
         )
 
+    # Step 6: BharatCode AI explanation (falls back to template text without a key)
+    triggered = [
+        f"{name}: {sig.get('verdict', '')}".strip(": ")
+        for name, sig in result["signals"].items()
+        if isinstance(sig, dict) and sig.get("triggered")
+    ]
+    bharatcode_explanation = await asyncio.to_thread(
+        explain_verdict, req.url, result["threat_level"], triggered
+    )
+
     return {
         "url": req.url,
         "threat_score": result["threat_score"],
@@ -103,6 +115,7 @@ async def scan(req: ScanRequest, request: Request):
         "signals": result["signals"],
         "screenshot_b64": sandbox_result.get("screenshot_b64"),
         "guardian_alert_sent": alert_sent,
+        "bharatcode_explanation": bharatcode_explanation,
         "recommendation": result["signals"]["ai_analysis"].get("recommendation", "Stay safe."),
         "explanation": result["signals"]["ai_analysis"].get("explanation", ""),
         "tamil_explanation": result["signals"]["ai_analysis"].get("tamil_explanation", "")
