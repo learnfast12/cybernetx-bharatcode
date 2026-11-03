@@ -1,3 +1,60 @@
+# CyberNetX: Detect. Trace. Neutralize.
+
+One consent-first pipeline that blocks AI-written UPI scams on the phone, groups lures into campaigns, and traces the stolen money back to its collector, with human review before any hold or freeze.
+
+**Powered by BharatCode (Qwen 3.8 27B):** every ShieldNetX verdict comes with a plain-language explanation, so users and analysts see *why* something was flagged.
+
+![ShieldNetX app](assets/shieldnetx-app.png)
+
+## The problem
+Most UPI fraud in India starts with a link or APK on WhatsApp or SMS. The link opens a fresh clone of a bank page, and the money is gone in minutes. Link checkers need the user to copy and paste, and they mostly catch links already known to be bad. Bank tools freeze one mule account at a time and don't explain why.
+
+## How it works
+**ShieldNetX (Detect).** Automatic link interception through a Chrome extension and an Android Accessibility Service. Unknown links are opened in an isolated Ghost Sandbox and scored on behaviour, page forensics, visual brand match (CLIP), domain/TLS/kit fingerprints, and crowd signals. A link is blocked only when 2+ independent signal families agree.
+
+**TraceNetX (Trace).** A Neo4j graph and ML ensemble (XGBoost, LightGBM, Random Forest, LSTM, SHAP) that traces money backwards to the dealer in about 3-4 hops, separates victims from willing participants, and produces an evidence package.
+
+**Bridge.** Payee details (UPI ID, account, phone, domain, IP) extracted from blocked scam pages are sent to TraceNetX as seed nodes via `POST /api/investigate`.
+
+## BharatCode integration
+`shieldnetx/sentinel-backend/bharatcode_client.py` calls the BharatCode API (`qwen-3.8-27b`). `POST /scan` returns a `bharatcode_explanation` field with the reasons behind the verdict, built only from the signals that triggered. Without an API key, it falls back to template text.
+
+```bash
+cd shieldnetx/sentinel-backend
+pip install -r requirements.txt
+export BHARATCODE_API_KEY="your-key"   # see .env.example; never commit it
+python3 main.py                         # http://localhost:8000
+curl -s -X POST localhost:8000/scan -H "Content-Type: application/json" \
+  -d '{"url":"http://sbi-kyc-verify.xyz/login"}'
+```
+
+## TraceNetX
+```bash
+docker start neo4j   # wait ~15 s
+./tracenetx/start-tracenetx-v2.sh
+```
+
+| Spider Map | Dashboard |
+|---|---|
+| ![Spider map](assets/spider-map.png) | ![Dashboard](assets/dashboard.png) |
+| **City Map** | **Evidence package** |
+| ![City map](assets/city-map.png) | ![Evidence](assets/evidence-package.png) |
+
+## Safety and responsible AI
+- Never collects message bodies, contacts, keystrokes, PINs, OTPs, or precise location.
+- No block on a single weak signal; a "Not a scam" button triggers a re-scan.
+- Humans approve every hold or freeze, with an appeal path.
+- The demo uses synthetic data only.
+
+## Limitations
+The demo network is small (21 accounts, 42 transactions), so ML scores can vary. All performance figures in our plans are targets, not results. The Android Accessibility permission is restricted by store policy, so the pilot is an opt-in install.
+
+## Team
+Team OMEGA 404, Sri Sairam Engineering College, Chennai: Shravan Khanal, Rithwik, Kirthik, Anisha.
+
+---
+
+# Original documentation
 <div align="center">
 
 # CyberNetX
