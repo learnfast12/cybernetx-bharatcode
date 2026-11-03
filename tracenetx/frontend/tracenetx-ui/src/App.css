@@ -1,0 +1,89 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0A0E1A;
+  color: #E2E8F0;
+  font-family: 'Inter', 'IBM Plex Sans', sans-serif;
+}
+
+.app { display: flex; flex-direction: column; height: 100vh; }
+
+.main { display: flex; flex: 1; overflow: hidden; }
+.left-panel {
+  width: 220px;
+  background: #0D1220;
+  border-right: 1px solid #1A2035;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.map-area { flex: 1; padding: 12px; position: relative; }
+.right-panel {
+  width: 280px;
+  background: #0D1220;
+  border-left: 1px solid #1A2035;
+  overflow-y: auto;
+}
+
+.filter-panel { display: flex; flex-direction: column; gap: 8px; }
+.filter-panel h3 {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.filter-panel input {
+  background: #151B2E;
+  border: 1px solid #1A2035;
+  color: #E2E8F0;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  outline: none;
+}
+.filter-panel input:focus { border-color: #C9A84C; }
+.btn-reset {
+  background: #151B2E;
+  color: #94A3B8;
+  border: 1px solid #1A2035;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: all 0.2s;
+}
+.btn-reset:hover { border-color: #C9A84C; color: #C9A84C; }
+
+.legend h3 {
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #64748B;
+  margin-bottom: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 6px; color: #94A3B8; }
+.dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+/* Matches COLORS in App.js exactly — legend must never drift from actual risk colors */
+.dot.critical { background: #FF2D2D; }
+.dot.high { background: #FF6B00; }
+.dot.medium { background: #FFB800; }
+.dot.low { background: #00C853; }
+.dot.clear { background: #00C853; }
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748B;
+  font-size: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 1px;
+}
